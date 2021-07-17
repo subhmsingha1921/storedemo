@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
-import { Dimensions, StyleSheet, View, Text, FlatList, ScrollView, Image } from 'react-native';
+import { Dimensions, StyleSheet, View, Text, FlatList, ScrollView, Image, TouchableOpacity } from 'react-native';
 import MapView from 'react-native-maps';
 import {
   HeaderButtons,
@@ -9,7 +9,7 @@ import {
   HiddenItem,
   OverflowMenu,
 } from 'react-navigation-header-buttons';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons, FontAwesome } from '@expo/vector-icons';
 
 import CategoryItem from "../components/CategoryItem";
 
@@ -24,24 +24,27 @@ const STORES = [
     title: "Garments & Shopping",
     imageUrl: require("../../assets/images/madhu.png"),
     flatOffer: 10,
-    distance: 10,
-    status: "",
+    distance: 2,
+    status: "Open",
+    star: 5,
   },
   {
     id: 2,
     title: "Dutt Grocery & Sons",
     imageUrl: require("../../assets/images/duttgrocery.png"),
     flatOffer: 3,
-    distance: 3,
+    distance: 5,
     status: "Close",
+    star: 4,
   },
   {
     id: 3,
     title: "Dutt Jewel & Sons",
     imageUrl: require("../../assets/images/duttjewel.png"),
     flatOffer: 2,
-    distance: 2,
+    distance: 3,
     status: "Open",
+    star: 4,
   },
   {
     id: 4,
@@ -50,6 +53,7 @@ const STORES = [
     flatOffer: 2,
     distance: 2,
     status: "Open",
+    star: 5,
   },
   {
     id: 5,
@@ -58,6 +62,7 @@ const STORES = [
     flatOffer: 2,
     distance: 2,
     status: "Open",
+    star: 4,
   },
 ];
 
@@ -70,7 +75,7 @@ const CATEGORY = [
   },
   {
     id: 2,
-    imageUrl: require("../../assets/images/jewelry1.png"),
+    imageUrl: require("../../assets/images/garmentimage.png"),
     category: "Garments & Shopping",
     background: "rgb(255,235,233)",
   },
@@ -103,15 +108,27 @@ const MaterialHeaderButton = (props) => (
   <HeaderButton IconComponent={MaterialCommunityIcons} iconSize={23} {...props} />
 );
 
+// <FontAwesome name="user-circle-o" size={37} color="white" style={{ paddingLeft: 15, paddingTop: 5 }} />
+
+const HeaderAccountLocation = () => {
+  return (
+    <View style={{ flexDirection: 'row' }}>
+      <Image source={require('../../assets/images/userprofile.png')} style={{ width: 45, height: 45, marginHorizontal: 15 }} />
+      <View>
+        <Text style={{ color: 'white', fontSize: 18, fontWeight: 'bold' }}>Location</Text>
+        <Text style={{ color: 'white', fontSize: 13, marginTop: -2 }}>Barasat West...</Text>
+      </View>
+    </View>
+  )
+}
+
 export default function StoreScreen({ navigation }) {
   
   React.useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: 'Location',
+      headerTitle: null,
       headerLeft: () => {
-        <HeaderButtons HeaderButtonComponent={MaterialHeaderButton}>
-          <Item title="account" iconName="account-circle" color="white" onPress={() => {}} />
-        </HeaderButtons>
+        return <HeaderAccountLocation />
       },
       headerRight: () => (
         <HeaderButtons HeaderButtonComponent={IoniconsHeaderButton}>
@@ -122,7 +139,6 @@ export default function StoreScreen({ navigation }) {
       ),
     });
   }, [navigation]);
-
   
   const renderCategory = (itemData) => {
     return (
@@ -177,17 +193,30 @@ export default function StoreScreen({ navigation }) {
         <View style={{ width: "60%" }}>
           <Text style={{ fontWeight: "bold", fontSize: 12 }}>{item.title}</Text>
           <Text style={{ fontSize: 8 }}>Garments and Shopping</Text>
-          <View>
-            <Text style={{ fontSize: 10 }}>
+          <View style={{ flexDirection: 'row', marginVertical: 3 }}>
+            <Image source={require('../../assets/images/couponoffer.png')} />
+            <Text style={{ fontSize: 10, paddingTop: 2 }}>
               Flat {item.flatOffer}% cashback on purchase anything
             </Text>
           </View>
-          <View>
-            <Text style={{ fontSize: 8 }}>{item.distance} meters</Text>
+          <View style={{ flexDirection: 'row' }} >
+            <Image source={item.distance > 3 ? require('../../assets/images/car.png') : require('../../assets/images/walking.png')} />
+            <Text style={{ fontSize: 8, marginHorizontal: 3 }}>{item.distance} meters</Text>
           </View>
         </View>
         <View style={{ width: "20%" }}>
-          <Text>{item.status}</Text>
+          <Text style={{ color: item.status == "Open" ? "green" : "red", fontSize: 13, paddingLeft: 10, marginBottom: 10 }}>{item.status}</Text>
+          {item.star > 4 ? (
+          <>
+            <Image style={{ width: 52, height: 22, paddingLeft: 5 }} source={require('../../assets/images/Stargrp5.png')} />
+            <Text style={{ paddingLeft: 18, marginTop: -5, fontSize: 10 }}>{item.star}.0</Text>
+          </>
+          ) : (
+          <>
+            <Image style={{ width: 42, height: 22 }} source={require('../../assets/images/Stargrp42.png')} />
+            <Text style={{ paddingLeft: 18, marginTop: -5, fontSize: 10 }}>{item.star}.0</Text>
+          </>
+          )}
         </View>
       </View>
     );
@@ -198,7 +227,12 @@ export default function StoreScreen({ navigation }) {
       <StatusBar backgroundColor="#ffab3a" />
       <View style={styles.breadcrumb}>
         <View style={styles.filter}>
-          <Text style={styles.breadText}>Sort By Distance</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#eaeef1', borderRadius: 10 }}>
+            <TouchableOpacity onPress={() => {}}>
+              <Text style={styles.breadText}>Sort By Distance</Text>
+            </TouchableOpacity>
+            <FontAwesome name="caret-down" size={14} color="#9c9d9f" style={{ paddingRight: 5 }} />
+          </View>
           <Text style={styles.breadText}>Open Now</Text>
         </View>
         <Text style={styles.breadText}>
